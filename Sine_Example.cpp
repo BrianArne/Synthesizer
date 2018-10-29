@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "portaudio.h"
+#include <iostream>
 
 #define NUM_SECONDS   (5)
 #define SAMPLE_RATE   (44100)
@@ -137,17 +138,18 @@ class Sine
     }
 
     /* This routine will be called by the PortAudio engine when audio is needed.
-     *     ** It may called at interrupt level on some machines so don't do anything
-     *         ** that could mess up the system like calling malloc() or free().
-     *             */
+     * It may called at interrupt level on some machines so don't do anything
+     * that could mess up the system like calling malloc() or free().
+     */
     static int paCallback( const void *inputBuffer, void *outputBuffer,
         unsigned long framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags,
         void *userData )
     {
-      /* Here we cast userData to Sine* type so we can call the instance method paCallbackMethod, we can do that since 
-       *            we called Pa_OpenStream with 'this' for userData */
+      /* Here we cast userData to Sine* type so we can call the instance method paCallbackMethod, 
+       * we can do that since we called Pa_OpenStream with 'this' for userData 
+       */
       return ((Sine*)userData)->paCallbackMethod(inputBuffer, outputBuffer,
           framesPerBuffer,
           timeInfo,
@@ -161,8 +163,8 @@ class Sine
     }
 
     /*
-     *      * This routine is called by portaudio when playback is done.
-     *           */
+     * This routine is called by portaudio when playback is done.
+     */
     static void paStreamFinished(void* userData)
     {
       return ((Sine*)userData)->paStreamFinishedMethod();

@@ -1,0 +1,10 @@
+Should I be multiplying the sinewave that is being added as we are adding to increase the amplitude?
+  What are the limits? Can speakers be blown?
+
+Should sine be able to hold another table of 32 values (for each partial amplitude) ?
+
+Where do frames per buffer come into play? What is the frame per buffer
+Where does SampleRate come into play?
+
+Investigate opening and closing steams
+
