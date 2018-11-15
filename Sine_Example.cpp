@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include "portaudio.h"
+#include <portaudio.h>
 #include <iostream>
 
 #define NUM_SECONDS   (5)
@@ -11,24 +11,35 @@
 #define M_PI  (3.14159265)
 #endif
 
-#define TABLE_SIZE   (200)
+#define TABLE_SIZE   (4096)
 
 class Sine
 {
   public:
-    Sine() : stream(0), left_phase(0), right_phase(0)
+    Sine() : stream(0), _time(1),
+             left_phase(0), 
+             right_phase(0),
+             frequency(440.), 
+             frequency2(880.), 
+             frequency3(1660.), 
+             amplitude(.5),
+             //This is new
+             increment(frequency * TABLE_SIZE / SAMPLE_RATE),
+             increment2(frequency2 * TABLE_SIZE / SAMPLE_RATE),
+             increment3(frequency3 * TABLE_SIZE / SAMPLE_RATE)
   {
-    /* initialise sinusoidal wavetable */
+    /* Init. wavetable */
     for( int i=0; i<TABLE_SIZE; i++ )
     {
       sine[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
+      sine_two[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
+      sine_three[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
     }
-
-    sprintf( message, "No Message" );
   }
 
     bool open(PaDeviceIndex index)
     {
+      //First we set up an output
       PaStreamParameters outputParameters;
 
       outputParameters.device = index;
@@ -42,28 +53,33 @@ class Sine
         printf("Output device name: '%s'\r", pInfo->name);
       }
 
-      outputParameters.channelCount = 2;       /* stereo output */
-      outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
+      outputParameters.channelCount = 2;
+      outputParameters.sampleFormat = paFloat32;
       outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
       outputParameters.hostApiSpecificStreamInfo = NULL;
 
+      //This creates the actual stream and where it gets it's data from(this)
+      //and its call back function
+      //Returns an integer to check for error
       PaError err = Pa_OpenStream(
           &stream,
-          NULL, /* no input */
+          NULL, //no input
           &outputParameters,
           SAMPLE_RATE,
           paFramesPerBufferUnspecified,
-          paClipOff,      /* we won't output out of range samples so don't bother clipping them */
+          paClipOff,
           &Sine::paCallback,
-          this            /* Using 'this' for userData so we can cast to Sine* in paCallback method */
+          this
           );
 
       if (err != paNoError)
       {
-        /* Failed to open stream to device !!! */
+        //Failed to open
         return false;
       }
 
+      //Streams provide access to audio hardware
+      //Streams request audio from callback methods
       err = Pa_SetStreamFinishedCallback( stream, &Sine::paStreamFinished );
 
       if (err != paNoError)
@@ -119,37 +135,33 @@ class Sine
       float *out = (float*)outputBuffer;
       unsigned long i;
 
-      (void) timeInfo; /* Prevent unused variable warnings. */
+      (void) timeInfo;
       (void) statusFlags;
       (void) inputBuffer;
 
       for( i=0; i<framesPerBuffer; i++ )
       {
-        *out++ = sine[left_phase];  /* left */
-        *out++ = sine[right_phase];  /* right */
-        left_phase += 1;
-        if( left_phase >= TABLE_SIZE ) left_phase -= TABLE_SIZE;
-        right_phase += 3; /* higher pitch so we can distinguish left and right. */
-        if( right_phase >= TABLE_SIZE ) right_phase -= TABLE_SIZE;
+        double val  = .5 * sin(220. * 2. * M_PI * i/SAMPLE_RATE);// + sin(1./220. * 2 * M_PI) + sin(1./880. * 2 * M_PI);
+        *out++ = val;
+        //*out++ = sine_two[val];
+        //_time++;
+        //*out++ = sine_three[left_phase2];
+        //left_phase = fmod((left_phase + increment), TABLE_SIZE);
+        //right_phase = fmod((right_phase + increment2), TABLE_SIZE);
+        //left_phase2 = fmod((left_phase2 + increment3), TABLE_SIZE);
       }
 
       return paContinue;
 
     }
 
-    /* This routine will be called by the PortAudio engine when audio is needed.
-     * It may called at interrupt level on some machines so don't do anything
-     * that could mess up the system like calling malloc() or free().
-     */
+    //When portAudio needs data, it calls this function
     static int paCallback( const void *inputBuffer, void *outputBuffer,
         unsigned long framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags,
         void *userData )
     {
-      /* Here we cast userData to Sine* type so we can call the instance method paCallbackMethod, 
-       * we can do that since we called Pa_OpenStream with 'this' for userData 
-       */
       return ((Sine*)userData)->paCallbackMethod(inputBuffer, outputBuffer,
           framesPerBuffer,
           timeInfo,
@@ -162,18 +174,32 @@ class Sine
       printf( "Stream Completed: %s\n", message );
     }
 
-    /*
-     * This routine is called by portaudio when playback is done.
-     */
+    //Called by portAudio when stream is finished
     static void paStreamFinished(void* userData)
     {
       return ((Sine*)userData)->paStreamFinishedMethod();
     }
-
+    
+    //Don't approve of this naming convention, buts it how they do it in their examples
     PaStream *stream;
     float sine[TABLE_SIZE];
+    float sine_two[TABLE_SIZE];
+    float sine_three[TABLE_SIZE];
     int left_phase;
+    int left_phase2;
     int right_phase;
+    long long _time;
+
+    float amplitude;
+    float frequency;
+    float frequency2;
+    float frequency3;
+    int increment;
+    int increment2;
+    int increment3;
+
+
+    //Error Logging
     char message[20];
 };
 
@@ -200,11 +226,11 @@ class ScopedPaHandler
 
 
 /*******************************************************************/
-int main(void);
 int main(void)
 {
   Sine sine;
 
+  // Frames_Per_Buffer doesn't matter here
   printf("PortAudio Test: output sine wave. SR = %d, BufSize = %d\n", SAMPLE_RATE, FRAMES_PER_BUFFER);
 
   ScopedPaHandler paInit;
