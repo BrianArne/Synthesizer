@@ -3,10 +3,16 @@
 #include "/usr/local/include/CImg.h"
 #include <iostream>
 #include <stdio.h>
-
+typdedef unsigned short Color;
 
 //MagikImage 
 // /usr/local/Cellar/jpeg/9c
+struct RGBVals{
+  Color r_;
+  Color g_;
+  Color b_;
+
+};
 
 int main(void){
 
