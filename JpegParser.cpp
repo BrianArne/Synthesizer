@@ -3,44 +3,60 @@
 #include "/usr/local/include/CImg.h"
 #include <iostream>
 #include <stdio.h>
-typdedef unsigned short Color;
+typedef unsigned short Color;
 
-//MagikImage 
-// /usr/local/Cellar/jpeg/9c
 struct RGBVals{
+  RGBVals(Color r, Color g, Color, B) : r_(r), g_(g), b_(b){}
+
   Color r_;
   Color g_;
   Color b_;
-
 };
 
-int main(void){
+typedef std::vector<RGBVals*> RBGVec;
 
-  cimg_library::CImg<unsigned char> src("Flowers.jpg");
-  int width = src.width();
-  int height = src.height();
-  std::cout << width << "x" << height << std::endl;
-  int flower_pixels = 0;
-  for (int r = 0; r < height; r++){
-    for (int c = 0; c < width; c++){
-      int blue = (int)src(c,r,0,2);
-      int red = (int)src(c,r,0,0);
-      int green = (int)src(c,r,0,1);
-      if( blue > 150 && red < 125 && green < 125){
-        flower_pixels++;
-        std::cout << "(" << r << "," << c << ") ="
-          << " R" << red
-          << " G" << green 
-          << " B" << blue << std::endl;
+class JpegParser {
+
+  public:
+
+    JpegParser(int w=0, int h=0, std::string src=null, RGBVec pict_rgb=null) : 
+        width_(w), 
+        height_(h), 
+        src_file_(src),
+        pict_rgb_(){}
+
+    void init_file(){
+      if(src == null){
+        std::cout << "No Src File" << std::endl;
+        return;
+      }else{
+        cimg_library::CImg<unsigned char> src(src);
+        width_ = src.width();
+        height = src.height();
       }
     }
-  }
-  std::cout << "Just flower pixels: " << flower_pixels << std::endl;
-  std::cout << "Total Pixels: " << (width * height) << std::endl;
-  std::cout << "Flower/Picture: " << (double)(flower_pixels)/(double)(width * height) << std::endl;
-  std::cout << "1 second per pixel is 3,3333 hours of sound..." << std::endl;
-  std::cout << "Image size: " << width << "x" << height << std::endl;
-  return 0;
-  }
 
+    void fill_vec(){
+      for (int r = 0; r < height; r++){
+        for (int c = 0; c < width; c++){
+          Color r = (Color)src(c,r,0,0);
+          Color g = (Color)src(c,r,0,1);
+          Color b = (Color)src(c,r,0,2);
+          RGBVals * vals = new RGBVals(r, g, b);
+          pict_rgb_.push_back(vals);
+        }
+      }
+    }
+
+    RGBVec get_rgb_vec(){
+      return pict_rgb_;
+    }
+
+
+  private:
+    int width_;
+    int height_;
+    std::string src_file_;
+    RGBVec pict_rgb_;
+};
 
