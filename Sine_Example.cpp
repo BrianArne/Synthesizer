@@ -11,29 +11,20 @@
 #define M_PI  (3.14159265)
 #endif
 
-#define TABLE_SIZE   (4096)
+#define TABLE_SIZE   (100)
 
 class Sine
 {
   public:
-    Sine() : stream(0), _time(1),
+    Sine() : stream(0),
              left_phase(0), 
              right_phase(0),
-             frequency(440.), 
-             frequency2(880.), 
-             frequency3(1660.), 
-             amplitude(.5),
-             //This is new
-             increment(frequency * TABLE_SIZE / SAMPLE_RATE),
-             increment2(frequency2 * TABLE_SIZE / SAMPLE_RATE),
-             increment3(frequency3 * TABLE_SIZE / SAMPLE_RATE)
+             n_phase(0)
   {
     /* Init. wavetable */
     for( int i=0; i<TABLE_SIZE; i++ )
     {
       sine[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
-      sine_two[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
-      sine_three[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
     }
   }
 
@@ -53,7 +44,7 @@ class Sine
         printf("Output device name: '%s'\r", pInfo->name);
       }
 
-      outputParameters.channelCount = 2;
+      outputParameters.channelCount = 1;
       outputParameters.sampleFormat = paFloat32;
       outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
       outputParameters.hostApiSpecificStreamInfo = NULL;
@@ -141,14 +132,14 @@ class Sine
 
       for( i=0; i<framesPerBuffer; i++ )
       {
-        double val  = .5 * sin(220. * 2. * M_PI * i/SAMPLE_RATE);// + sin(1./220. * 2 * M_PI) + sin(1./880. * 2 * M_PI);
-        *out++ = val;
-        //*out++ = sine_two[val];
-        //_time++;
-        //*out++ = sine_three[left_phase2];
-        //left_phase = fmod((left_phase + increment), TABLE_SIZE);
-        //right_phase = fmod((right_phase + increment2), TABLE_SIZE);
-        //left_phase2 = fmod((left_phase2 + increment3), TABLE_SIZE);
+        *out++ = 5*sine[left_phase] + 1.5*sine[right_phase] + .2 * sine[n_phase];// + sine[right_phase] + sine[n_phase];
+        //*out++ = sine[right_phase];// + sine[right_phase] + sine[n_phase];
+        left_phase += 1;
+        if (left_phase >= TABLE_SIZE) left_phase -= TABLE_SIZE;
+        right_phase += 7;
+        if( right_phase >= TABLE_SIZE) right_phase -= TABLE_SIZE;
+        n_phase += 5;
+        if( n_phase >= TABLE_SIZE) n_phase -= TABLE_SIZE;
       }
 
       return paContinue;
@@ -183,21 +174,9 @@ class Sine
     //Don't approve of this naming convention, buts it how they do it in their examples
     PaStream *stream;
     float sine[TABLE_SIZE];
-    float sine_two[TABLE_SIZE];
-    float sine_three[TABLE_SIZE];
     int left_phase;
-    int left_phase2;
     int right_phase;
-    long long _time;
-
-    float amplitude;
-    float frequency;
-    float frequency2;
-    float frequency3;
-    int increment;
-    int increment2;
-    int increment3;
-
+    int n_phase;
 
     //Error Logging
     char message[20];
