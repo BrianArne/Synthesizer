@@ -2,6 +2,7 @@
 #include <math.h>
 #include <portaudio.h>
 #include <iostream>
+#include "ScopedPaHandler.hpp"
 
 #define NUM_SECONDS   (5)
 #define SAMPLE_RATE   (44100)
@@ -181,28 +182,6 @@ class Sine
     //Error Logging
     char message[20];
 };
-
-class ScopedPaHandler
-{
-  public:
-    ScopedPaHandler()
-      : _result(Pa_Initialize())
-    {
-    }
-    ~ScopedPaHandler()
-    {
-      if (_result == paNoError)
-      {
-        Pa_Terminate();
-      }
-    }
-
-    PaError result() const { return _result; }
-
-  private:
-    PaError _result;
-};
-
 
 /*******************************************************************/
 int main(void)

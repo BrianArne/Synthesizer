@@ -1,8 +1,8 @@
 #Makefile for Synthesizer
 
-CXX = g++
+CXX = g++ -std=c++11
 CXXPALIB = /usr/local/lib/libportaudio.dylib
-CXXJHEAD = ./jpeg-6b/jpeglib.h
+#CXXJHEAD = ./jpeg-6b/jpeglib.h
 
 #Targets
 
@@ -14,9 +14,9 @@ Sine: Sine.o
 Sine.o: Sine.cpp
 	$(CXX) -c Sine.cpp 
 
-Flowers: JpegParser.o 
+Flowers: JpegParser.o
 	$(CXX) JpegParser.o -ljpeg -o Flowers
 
-JpegParser.o: JpegParser.cpp
+JpegParser.o: JpegParser.cpp RGBVals.hpp
 	$(CXX) -c JpegParser.cpp
 
