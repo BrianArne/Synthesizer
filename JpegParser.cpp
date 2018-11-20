@@ -48,7 +48,3 @@ class JpegParser {
     const char* src_file_;
     RGBVec pict_vec_;
 };// End JpegParser Class
-
-int main(){
-  return 0;
-}
