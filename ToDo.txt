@@ -1,0 +1,11 @@
+Sine Class:
+
+  Needs a member var from mapper of amplitudes
+  Needs to take in a table size in constructor that is equivalent to hz
+    **44100/Hertz = table_size
+
+Mapper Class:
+  Needs to read RGBVec from JpegParser
+  Needs to construct int[16] values for each partial (value should be the amplitude of the partial)
+
+

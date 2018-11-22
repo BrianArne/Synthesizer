@@ -1,4 +1,5 @@
 // This class initializes PortAudio before use of the PortAudio API is avail.
+#include <portaudio.h>
 
 class ScopedPaHandler
 {

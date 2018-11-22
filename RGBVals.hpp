@@ -1,4 +1,8 @@
+#ifndef RGB_H
+#define RGB_H
+
 namespace RGB{
+
   typedef unsigned short Color;
 
   struct RGBVals{
@@ -11,3 +15,5 @@ namespace RGB{
     Color b_;
   };// End RGBVals();
 }
+
+#endif

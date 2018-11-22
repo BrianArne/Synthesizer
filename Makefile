@@ -14,9 +14,12 @@ Sine: Sine.o
 Sine.o: Sine.cpp
 	$(CXX) -c Sine.cpp 
 
+Mapper.o: Mapper.cpp Mapper.hpp
+	$(CXX) -c Mapper.cpp
+
 Flowers: JpegParser.o
 	$(CXX) JpegParser.o -ljpeg -o Flowers
 
-JpegParser.o: JpegParser.cpp RGBVals.hpp
+JpegParser.o: JpegParser.cpp JpegParser.hpp RGBVals.hpp
 	$(CXX) -c JpegParser.cpp
 
