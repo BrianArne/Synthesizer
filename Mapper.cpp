@@ -45,23 +45,3 @@ void Mapper::Mapper::min_max_freq(){
 Mapper::PartialContainer Mapper::Mapper::get_partials(){
   return partial_container_;
 }//End get_partials();
-
-int main(){
-  JpegParser::JpegParser pic("Flowers.jpg");
-  pic.fill_vec();
-  JpegParser::RGBVec vec = pic.get_rgb_vec();
-
-  Mapper::Mapper map(440, vec);
-  map.map_partials();
-  Mapper::PartialContainer partials = map.get_partials();
-  std::cout << partials.size() << std::endl;
-  for(auto arr : partials){
-    for(int i = 0; i < MAX_PARTIALS; i++){
-      std::cout << arr[i] << std::endl;
-    }
-    std::cout << "BLOCK: " << std::endl;
-  }
-  return 0;
-}
-
-

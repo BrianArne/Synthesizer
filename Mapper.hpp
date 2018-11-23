@@ -4,6 +4,7 @@
 #include<utility>
 #include<vector>
 #include "RGBVals.hpp"
+#include "JpegParser.hpp"
 
 
 #define MAX_PARTIALS 16
