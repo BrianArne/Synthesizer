@@ -3,13 +3,13 @@
 
 #include<utility>
 #include<vector>
+#include "RGBVals.hpp"
 
 
 #define MAX_PARTIALS 16
 namespace Mapper{
 
-  typedef int[MAX_PARTIALS] PartialContainer;
-
+  typedef std::vector<std::vector<double>> PartialContainer;
 
   class Mapper{
 
@@ -17,20 +17,30 @@ namespace Mapper{
       /*
        * Constructor taking the fundametal hertz
        */
-      Mapper(int f);
+      Mapper(int f, JpegParser::RGBVec pixel_vec);
 
       /*
        * Initializes min and max pair
        */
       void min_max_freq();
 
+      /*
+       * Maps pixel values to 16 partials and store arr in member vector
+       */
+      void map_partials();
+
+      /*
+       * Getter for mapped partials
+       */
+      PartialContainer get_partials();
+
     private:
 
       int fund_hz_;
 
       //Minimum is the first number in the pair. Max is the second number in the pair.
-      std::pair<int, int> min_max_;
-      std::vector<PartialContainer> partial_containter_;
+      JpegParser::RGBVec pixel_vec_;
+      PartialContainer partial_container_;
 
   };
 }

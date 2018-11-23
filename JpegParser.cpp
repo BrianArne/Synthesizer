@@ -1,26 +1,21 @@
 #define cimg_display 0
 #define cimg_use_jpeg
 
-//#include "/usr/local/include/CImg.h"
-#include <CImg.h>
+#include "/usr/local/include/CImg.h"
 #include "RGBVals.hpp"
 #include "JpegParser.hpp"
 #include <vector>
 #include <iostream>
 
-
 /*
  * Constructor taking the file name
  */
-JpegParser::JpegParser(const char* src) : 
-  src_file_(src),
-  pict_vec_()
-{}// End JpegParser();
+JpegParser::JpegParser::JpegParser(const char* src) : src_file_(src){}
 
 /*
  * Fills member variable picture vector
  */
-void JpegParser::fill_vec(){
+void JpegParser::JpegParser::fill_vec(){
   cimg_library::CImg<unsigned char> cimg_src_(src_file_);
   int width_ = cimg_src_.width();
   int height_ = cimg_src_.height();
@@ -38,6 +33,6 @@ void JpegParser::fill_vec(){
 /*
  * Getter for picture vector
  */
-RGBVec JpegParser::get_rgb_vec(){
+JpegParser::RGBVec JpegParser::JpegParser::get_rgb_vec(){
   return pict_vec_;
 }// End get_rgb_vec();

@@ -2,11 +2,10 @@
 
 CXX = g++ -std=c++11
 CXXPALIB = /usr/local/lib/libportaudio.dylib
-#CXXJHEAD = ./jpeg-6b/jpeglib.h
 
 #Targets
 
-all: Sine Flowers
+all: Sine Mapper
 
 Sine: Sine.o
 	$(CXX) Sine.o -lportaudio -o Sine
@@ -14,11 +13,14 @@ Sine: Sine.o
 Sine.o: Sine.cpp
 	$(CXX) -c Sine.cpp 
 
-Mapper.o: Mapper.cpp Mapper.hpp
+Mapper: Mapper.o JpegParser.o
+	$(CXX) Mapper.o -ljpeg JpegParser.o -o Map
+
+Mapper.o: Mapper.cpp Mapper.hpp JpegParser.hpp RGBVals.hpp
 	$(CXX) -c Mapper.cpp
 
-Flowers: JpegParser.o
-	$(CXX) JpegParser.o -ljpeg -o Flowers
+#Flowers: JpegParser.o
+	#$(CXX) JpegParser.o -ljpeg -o Flowers
 
 JpegParser.o: JpegParser.cpp JpegParser.hpp RGBVals.hpp
 	$(CXX) -c JpegParser.cpp
