@@ -107,7 +107,8 @@ class Sine
           &outputParameters,
           SAMPLE_RATE,
           paFramesPerBufferUnspecified,
-          paClipOff,
+          //paClipOff,
+          paNoFlag,
           &Sine::paCallback,
           this
           );
